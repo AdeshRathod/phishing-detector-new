@@ -24,12 +24,7 @@ export default function ResultsPage() {
       return
     }
 
-    // In a real application, you would call your API here
-    // For demo purposes, we'll use a mock function
-    const analysisResults = analyzeUrl(url, isDemoMode, scanMode)
-
-
-     async function fetchResults() {
+    async function fetchResults() {
       try {
         const decodedUrl = decodeURIComponent(url)
 
@@ -53,15 +48,7 @@ export default function ResultsPage() {
     }
 
     fetchResults()
-
-    // Simulate loading time for more advanced scans
-    const loadingTime = scanMode === "standard" ? 1000 : scanMode === "advanced" ? 2500 : 4000
-
-    setTimeout(() => {
-      setResults(analysisResults)
-      setLoading(false)
-    }, loadingTime)
-  }, [url, isDemoMode, scanMode])
+  }, [url, scanMode])
 
   if (loading) {
     return (
@@ -665,8 +652,10 @@ export default function ResultsPage() {
                         padding: "8px 16px",
                         fontWeight: activeTab === "all" ? "bold" : "normal",
                         borderBottom: activeTab === "all" ? "2px solid #22c55e" : "none",
+                        borderTop: "1px solid #ccc",
+                        borderLeft: "1px solid #ccc",
+                        borderRight: "1px solid #ccc",
                         backgroundColor: "transparent",
-                        border: "none",
                         cursor: "pointer",
                         color: "#e4e4e4",
                       }}
@@ -679,8 +668,10 @@ export default function ResultsPage() {
                         padding: "8px 16px",
                         fontWeight: activeTab === "failed" ? "bold" : "normal",
                         borderBottom: activeTab === "failed" ? "2px solid #ef4444" : "none",
+                        borderTop: "1px solid #ccc",
+                        borderLeft: "1px solid #ccc",
+                        borderRight: "1px solid #ccc",
                         backgroundColor: "transparent",
-                        border: "none",
                         cursor: "pointer",
                         color: "#e4e4e4",
                       }}
@@ -693,8 +684,10 @@ export default function ResultsPage() {
                         padding: "8px 16px",
                         fontWeight: activeTab === "passed" ? "bold" : "normal",
                         borderBottom: activeTab === "passed" ? "2px solid #22c55e" : "none",
+                        borderTop: "1px solid #ccc",
+                        borderLeft: "1px solid #ccc",
+                        borderRight: "1px solid #ccc",
                         backgroundColor: "transparent",
-                        border: "none",
                         cursor: "pointer",
                         color: "#e4e4e4",
                       }}

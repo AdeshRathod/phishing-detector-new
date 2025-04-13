@@ -3,9 +3,13 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
+
 import { analyzeImage } from "@/lib/image-analysis"
+import { useRouter } from "next/navigation"
 
 export default function ImageAnalysisPage() {
+  const router = useRouter()
+
   const searchParams = useSearchParams()
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -17,59 +21,60 @@ export default function ImageAnalysisPage() {
   const isDemoMode = searchParams.get("demo") === "true"
   const scanMode = searchParams.get("mode") || "standard"
 
+
+  
   useEffect(() => {
-    // Get the image from localStorage if available
-    const storedImage = typeof window !== "undefined" ? localStorage.getItem("analyzedImage") : null
+    const storedImage = typeof window !== "undefined" ? localStorage.getItem("analyzedImage") : null;
     if (storedImage) {
-      setImagePreview(storedImage)
+      setImagePreview(storedImage);
     }
-
+  
     if (!storedImage) {
-      window.location.href = "/not-found"
-      return
+      window.location.href = "/not-found";
+      return;
     }
-
+  
     const fetchAnalysisResults = async () => {
       try {
         const formData = new FormData();
-    
-        // Convert base64 string to Blob
-        const base64Data = storedImage.split(',')[1]; // Remove `data:image/jpeg;base64,`
+  
+        const base64Data = storedImage.split(',')[1];
         const byteCharacters = atob(base64Data);
         const byteArrays = [];
-    
+  
         for (let i = 0; i < byteCharacters.length; i++) {
           byteArrays.push(byteCharacters.charCodeAt(i));
         }
-    
+  
         const byteArray = new Uint8Array(byteArrays);
         const blob = new Blob([byteArray], { type: 'image/jpeg' });
-    
-        // Optionally give the Blob a name by converting it to a File
         const file = new File([blob], "image.jpg", { type: "image/jpeg" });
-    
-        formData.append("file", file); // ✅ Now you're uploading an actual file
-    
+  
+        formData.append("file", file);
+  
         const response = await fetch("http://localhost:5000/scan-image", {
           method: "POST",
           body: formData,
         });
-    
+  
         if (!response.ok) {
           throw new Error("Failed to fetch analysis results");
         }
-    
+  
         const data = await response.json();
         setResults(data);
       } catch (error) {
         console.error("Error fetching analysis results:", error);
+        const errorMessage = encodeURIComponent(error.message || "Unknown error");
+        router.push(`/api-error?type=image&error=${errorMessage}&mode=${scanMode}`);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchAnalysisResults();
-  }, [isDemoMode, scanMode])
+  }, [isDemoMode, scanMode]);
+  
 
 
   if (loading) {
@@ -396,7 +401,7 @@ export default function ImageAnalysisPage() {
             display: "grid",
             gap: "24px",
             gridTemplateColumns: "minmax(0, 1fr)",
-            "@media (min-width: 768px)": {
+            "@media (minWidth: 768px)": {
               gridTemplateColumns: "minmax(0, 1fr) 300px",
             },
           }}
@@ -1014,7 +1019,7 @@ export default function ImageAnalysisPage() {
         </div>
       </footer>
       <style jsx>{`
-        @media (min-width: 768px) {
+        @media (minWidth: 768px) {
           main > div:first-child {
             grid-template-columns: minmax(0, 1fr) 300px;
           }

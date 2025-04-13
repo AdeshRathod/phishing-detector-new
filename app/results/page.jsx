@@ -4,8 +4,11 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { analyzeUrl } from "@/lib/phishing-detection"
+import { useRouter } from "next/navigation"
 
 export default function ResultsPage() {
+  const router = useRouter()
+
   const searchParams = useSearchParams()
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -13,6 +16,7 @@ export default function ResultsPage() {
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false)
   const [showExportOptions, setShowExportOptions] = useState(false)
 
+  
   // Get URL and scan mode from search params
   const isDemoMode = searchParams.get("demo") === "true"
   const url = searchParams.get("url") || (isDemoMode ? "https://example-phishing-site.com" : undefined)
@@ -40,9 +44,12 @@ export default function ResultsPage() {
 
         const data = await res.json()
         setResults(data)
-      } catch (err) {
+      } catch (error) {
+        console.error("Error fetching analysis results:", error);
+        const errorMessage = encodeURIComponent(error.message || "Unknown error");
+        router.push(`/api-error?type=image&error=${errorMessage}&mode=${scanMode}`);
         setError("Something went wrong while fetching analysis results.")
-      } finally {
+      }  finally {
         setLoading(false)
       }
     }

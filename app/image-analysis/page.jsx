@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
-import { analyzeImage } from "@/lib/image-analysis"
+// import { analyzeImage } from "@/lib/image-analysis"
 import { useRouter } from "next/navigation"
 
 export default function ImageAnalysisPage() {

@@ -64,7 +64,7 @@ export default function Home() {
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span>PhishGuard Advanced</span>
+            <span>PhishGuard </span>
           </Link>
           <nav
             style={{
@@ -715,7 +715,7 @@ export default function Home() {
                   color: "#e4e4e4",
                 }}
               >
-                About PhishGuard Advanced
+                About PhishGuard 
               </h2>
               <p
                 style={{
@@ -724,7 +724,7 @@ export default function Home() {
                   fontSize: "clamp(1rem, 1.5vw, 1.125rem)",
                 }}
               >
-                PhishGuard Advanced was created to help internet users identify and avoid increasingly sophisticated
+                PhishGuard  was created to help internet users identify and avoid increasingly sophisticated
                 phishing websites. Our tool provides comprehensive analysis with clear explanations to help you make
                 informed decisions about website safety.
               </p>
@@ -824,7 +824,7 @@ export default function Home() {
               },
             }}
           >
-            © {new Date().getFullYear()} PhishGuard Advanced. All rights reserved.
+            © {new Date().getFullYear()} PhishGuard . All rights reserved.
           </p>
           <div
             style={{

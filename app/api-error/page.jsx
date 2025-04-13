@@ -83,7 +83,7 @@ export default function ApiErrorPage() {
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span>PhishGuard Advanced</span>
+            <span>PhishGuard </span>
           </Link>
         </div>
       </header>
@@ -207,7 +207,7 @@ export default function ApiErrorPage() {
               flexWrap: "wrap",
             }}
           >
-            <Link
+            {/* <Link
               href={type === "url" ? `/results?mode=${mode}&retry=true` : `/image-analysis?mode=${mode}&retry=true`}
               style={{
                 display: "inline-flex",
@@ -236,7 +236,7 @@ export default function ApiErrorPage() {
                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38" />
               </svg>
               Retry Analysis
-            </Link>
+            </Link> */}
 
             <Link
               href="/"
@@ -308,7 +308,7 @@ export default function ApiErrorPage() {
               color: "#9ca3af",
             }}
           >
-            © {new Date().getFullYear()} PhishGuard Advanced. All rights reserved.
+            © {new Date().getFullYear()} PhishGuard . All rights reserved.
           </p>
           <div
             style={{

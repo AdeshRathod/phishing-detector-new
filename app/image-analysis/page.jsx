@@ -281,7 +281,7 @@ export default function ImageAnalysisPage() {
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span>PhishGuard Advanced</span>
+            <span>PhishGuard </span>
           </Link>
         </div>
       </header>
@@ -986,7 +986,7 @@ export default function ImageAnalysisPage() {
               color: "#9ca3af",
             }}
           >
-            © {new Date().getFullYear()} PhishGuard Advanced. All rights reserved.
+            © {new Date().getFullYear()} PhishGuard . All rights reserved.
           </p>
           <div
             style={{

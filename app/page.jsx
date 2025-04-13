@@ -1,9 +1,13 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import PhishingDetectorForm from "@/components/phishing-detector-form"
+import ImageUploadAnalyzer from "@/components/image-upload-analyzer"
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState("url") // url or image
+
   return (
     <div
       style={{
@@ -60,7 +64,7 @@ export default function Home() {
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span>PhishGuard</span>
+            <span>PhishGuard Advanced</span>
           </Link>
           <nav
             style={{
@@ -163,7 +167,7 @@ export default function Home() {
                   }}
                 >
                   Protect yourself from sophisticated phishing attacks with our AI-powered multi-layered detection
-                  system. Enter any URL to analyze its safety with detailed reasoning and threat intelligence.
+                  system. Analyze URLs or upload screenshots to identify threats with detailed reasoning.
                 </p>
               </div>
               <div
@@ -188,15 +192,86 @@ export default function Home() {
                       borderBottom: "1px solid #333",
                     }}
                   >
+                    <div style={{ display: "flex", gap: "2px" }}>
+                      <button
+                        onClick={() => setActiveTab("url")}
+                        style={{
+                          flex: 1,
+                          padding: "10px",
+                          backgroundColor: activeTab === "url" ? "#2a2a2a" : "transparent",
+                          color: activeTab === "url" ? "#e4e4e4" : "#9ca3af",
+                          border: "none",
+                          borderRadius: "4px 4px 0 0",
+                          fontWeight: activeTab === "url" ? "bold" : "normal",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="2" y1="12" x2="22" y2="12"></line>
+                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                        URL Analysis
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("image")}
+                        style={{
+                          flex: 1,
+                          padding: "10px",
+                          backgroundColor: activeTab === "image" ? "#2a2a2a" : "transparent",
+                          color: activeTab === "image" ? "#e4e4e4" : "#9ca3af",
+                          border: "none",
+                          borderRadius: "4px 4px 0 0",
+                          fontWeight: activeTab === "image" ? "bold" : "normal",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                          <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        Image Analysis
+                      </button>
+                    </div>
                     <h2
                       style={{
                         fontSize: "1.25rem",
                         fontWeight: "bold",
+                        marginTop: "16px",
                         marginBottom: "4px",
                         color: "#e4e4e4",
                       }}
                     >
-                      Check a Website
+                      {activeTab === "url" ? "Check a Website" : "Analyze a Screenshot"}
                     </h2>
                     <p
                       style={{
@@ -204,11 +279,13 @@ export default function Home() {
                         color: "#9ca3af",
                       }}
                     >
-                      Enter a URL to analyze for potential phishing threats
+                      {activeTab === "url"
+                        ? "Enter a URL to analyze for potential phishing threats"
+                        : "Upload a screenshot of a suspicious message or website"}
                     </p>
                   </div>
                   <div style={{ padding: "24px" }}>
-                    <PhishingDetectorForm />
+                    {activeTab === "url" ? <PhishingDetectorForm /> : <ImageUploadAnalyzer />}
                   </div>
                 </div>
               </div>
@@ -295,8 +372,8 @@ export default function Home() {
                   description: "Identifies malicious scripts and obfuscated code commonly used in phishing",
                 },
                 {
-                  title: "Form Detection",
-                  description: "Identifies forms collecting sensitive information like passwords or credit cards",
+                  title: "Image Analysis",
+                  description: "Scans screenshots for phishing indicators, malicious QR codes, and suspicious text",
                 },
                 {
                   title: "Blacklist Check",
@@ -405,7 +482,7 @@ export default function Home() {
                 Our enterprise-grade phishing detection includes cutting-edge technologies to protect against the most
                 sophisticated threats.
               </p>
-            </div>
+            </div>  
 
             <div
               style={{
@@ -438,6 +515,28 @@ export default function Home() {
                       <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                       <line x1="8" y1="21" x2="16" y2="21"></line>
                       <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Image & Screenshot Analysis",
+                  description:
+                    "Upload screenshots of suspicious messages or websites for analysis. Our OCR technology extracts and analyzes text, detects malicious QR codes, and identifies visual phishing indicators.",
+                  icon: (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#22c55e"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
                   ),
                 },
@@ -524,29 +623,6 @@ export default function Home() {
                       <path d="M3.09 8.84v7.21a2.11 2.11 0 0 0 1.09 1.85l4 2.28a2 2 0 0 0 1.95 0l4-2.28a2.11 2.11 0 0 0 1.09-1.85V8.84"></path>
                       <path d="M12 22.12V12"></path>
                       <path d="M17 5.55v-1a2.2 2.2 0 0 0-2.2-2.2h-5.6a2.2 2.2 0 0 0-2.2 2.2v1"></path>
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Natural Language Processing",
-                  description:
-                    "Our NLP algorithms analyze text content to identify social engineering tactics, urgency cues, and linguistic patterns common in phishing attempts.",
-                  icon: (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#22c55e"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="17" y1="10" x2="3" y2="10"></line>
-                      <line x1="21" y1="6" x2="3" y2="6"></line>
-                      <line x1="21" y1="14" x2="3" y2="14"></line>
-                      <line x1="17" y1="18" x2="3" y2="18"></line>
                     </svg>
                   ),
                 },
@@ -639,7 +715,7 @@ export default function Home() {
                   color: "#e4e4e4",
                 }}
               >
-                About PhishGuard
+                About PhishGuard Advanced
               </h2>
               <p
                 style={{
@@ -648,7 +724,7 @@ export default function Home() {
                   fontSize: "clamp(1rem, 1.5vw, 1.125rem)",
                 }}
               >
-                PhishGuard was created to help internet users identify and avoid increasingly sophisticated
+                PhishGuard Advanced was created to help internet users identify and avoid increasingly sophisticated
                 phishing websites. Our tool provides comprehensive analysis with clear explanations to help you make
                 informed decisions about website safety.
               </p>
@@ -677,6 +753,22 @@ export default function Home() {
                   }}
                 >
                   View Demo Analysis
+                </Link>
+                <Link
+                  href="/image-analysis?demo=true"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "10px 20px",
+                    backgroundColor: "#22c55e",
+                    color: "white",
+                    borderRadius: "4px",
+                    fontWeight: "medium",
+                    textDecoration: "none",
+                  }}
+                >
+                  View Image Analysis Demo
                 </Link>
                 <Link
                   href="#how-it-works"
@@ -732,7 +824,7 @@ export default function Home() {
               },
             }}
           >
-            © {new Date().getFullYear()} PhishGuard. All rights reserved.
+            © {new Date().getFullYear()} PhishGuard Advanced. All rights reserved.
           </p>
           <div
             style={{

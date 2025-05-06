@@ -1,81 +1,84 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 // import { analyzeImage } from "@/lib/image-analysis"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
 export default function ImageAnalysisPage() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const searchParams = useSearchParams()
-  const [results, setResults] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState("all")
-  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false)
-  const [imagePreview, setImagePreview] = useState(null)
+  const searchParams = useSearchParams();
+  const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("all");
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   // Get scan mode from search params
-  const isDemoMode = searchParams.get("demo") === "true"
-  const scanMode = searchParams.get("mode") || "standard"
+  const isDemoMode = searchParams.get("demo") === "true";
+  const scanMode = searchParams.get("mode") || "standard";
 
-
-  
   useEffect(() => {
-    const storedImage = typeof window !== "undefined" ? localStorage.getItem("analyzedImage") : null;
+    const storedImage =
+      typeof window !== "undefined"
+        ? localStorage.getItem("analyzedImage")
+        : null;
     if (storedImage) {
       setImagePreview(storedImage);
     }
-  
+
     if (!storedImage) {
       window.location.href = "/not-found";
       return;
     }
-  
+
     const fetchAnalysisResults = async () => {
       try {
         const formData = new FormData();
-  
-        const base64Data = storedImage.split(',')[1];
+
+        const base64Data = storedImage.split(",")[1];
         const byteCharacters = atob(base64Data);
         const byteArrays = [];
-  
+
         for (let i = 0; i < byteCharacters.length; i++) {
           byteArrays.push(byteCharacters.charCodeAt(i));
         }
-  
+
         const byteArray = new Uint8Array(byteArrays);
-        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        const blob = new Blob([byteArray], { type: "image/jpeg" });
         const file = new File([blob], "image.jpg", { type: "image/jpeg" });
-  
+
         formData.append("file", file);
-  
+
         const response = await fetch("http://localhost:5000/scan-image", {
           method: "POST",
           body: formData,
         });
-  
+
         if (!response.ok) {
           throw new Error("Failed to fetch analysis results");
         }
-  
+
         const data = await response.json();
         setResults(data);
       } catch (error) {
         console.error("Error fetching analysis results:", error);
-        const errorMessage = encodeURIComponent(error.message || "Unknown error");
-        router.push(`/api-error?type=image&error=${errorMessage}&mode=${scanMode}`);
+        const errorMessage = encodeURIComponent(
+          error.message || "Unknown error"
+        );
+        router.push(
+          `/api-error?type=image&error=${errorMessage}&mode=${scanMode}`
+        );
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchAnalysisResults();
   }, [isDemoMode, scanMode]);
-  
-
 
   if (loading) {
     return (
@@ -105,8 +108,8 @@ export default function ImageAnalysisPage() {
           {scanMode === "standard"
             ? "Analyzing image..."
             : scanMode === "advanced"
-              ? "Running advanced image analysis..."
-              : "Performing deep forensic image scan..."}
+            ? "Running advanced image analysis..."
+            : "Performing deep forensic image scan..."}
         </p>
         <div
           style={{
@@ -121,7 +124,9 @@ export default function ImageAnalysisPage() {
           <div
             style={{
               height: "100%",
-              width: `${scanMode === "standard" ? 70 : scanMode === "advanced" ? 40 : 20}%`,
+              width: `${
+                scanMode === "standard" ? 70 : scanMode === "advanced" ? 40 : 20
+              }%`,
               backgroundColor: "#22c55e",
               animation: "progress 3s ease-in-out",
             }}
@@ -131,8 +136,8 @@ export default function ImageAnalysisPage() {
           {scanMode === "standard"
             ? "Extracting text and analyzing visual elements..."
             : scanMode === "advanced"
-              ? "Running OCR and pattern recognition algorithms..."
-              : "Analyzing metadata, embedded code, and performing deep visual inspection..."}
+            ? "Running OCR and pattern recognition algorithms..."
+            : "Analyzing metadata, embedded code, and performing deep visual inspection..."}
         </p>
         <style jsx>{`
           @keyframes spin {
@@ -147,20 +152,23 @@ export default function ImageAnalysisPage() {
           }
         `}</style>
       </div>
-    )
+    );
   }
 
   if (!results) {
-    return null
+    return null;
   }
 
-  const overallScore = Math.round(results.checks.reduce((sum, check) => sum + check.score, 0) / results.checks.length)
+  const overallScore = Math.round(
+    results.checks.reduce((sum, check) => sum + check.score, 0) /
+      results.checks.length
+  );
 
   const getScoreColor = (score) => {
-    if (score >= 80) return "#22c55e"
-    if (score >= 60) return "#eab308"
-    return "#ef4444"
-  }
+    if (score >= 80) return "#22c55e";
+    if (score >= 60) return "#eab308";
+    return "#ef4444";
+  };
 
   const getScoreIcon = (score) => {
     if (score >= 80) {
@@ -179,7 +187,7 @@ export default function ImageAnalysisPage() {
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
-      )
+      );
     }
     if (score >= 60) {
       return (
@@ -198,7 +206,7 @@ export default function ImageAnalysisPage() {
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
-      )
+      );
     }
     return (
       <svg
@@ -216,14 +224,14 @@ export default function ImageAnalysisPage() {
         <line x1="15" y1="9" x2="9" y2="15"></line>
         <line x1="9" y1="9" x2="15" y2="15"></line>
       </svg>
-    )
-  }
+    );
+  };
 
   const filteredChecks = {
     all: results.checks,
     failed: results.checks.filter((check) => check.score < 70),
     passed: results.checks.filter((check) => check.score >= 70),
-  }
+  };
 
   return (
     <div
@@ -351,49 +359,24 @@ export default function ImageAnalysisPage() {
                 fontSize: "0.75rem",
                 padding: "2px 8px",
                 borderRadius: "9999px",
-                backgroundColor: scanMode === "standard" ? "#1e40af" : scanMode === "advanced" ? "#9333ea" : "#be185d",
+                backgroundColor:
+                  scanMode === "standard"
+                    ? "#1e40af"
+                    : scanMode === "advanced"
+                    ? "#9333ea"
+                    : "#be185d",
                 color: "white",
                 fontWeight: "medium",
               }}
             >
-              {scanMode === "standard" ? "Standard" : scanMode === "advanced" ? "Advanced" : "Forensic"}
+              {scanMode === "standard"
+                ? "Standard"
+                : scanMode === "advanced"
+                ? "Advanced"
+                : "Forensic"}
             </span>
           </div>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button
-              onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "8px 12px",
-                backgroundColor: showTechnicalDetails ? "rgba(34, 197, 94, 0.2)" : "transparent",
-                color: "#e4e4e4",
-                borderRadius: "4px",
-                border: "1px solid #333",
-                fontWeight: "medium",
-                cursor: "pointer",
-                fontSize: "0.875rem",
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ marginRight: "8px" }}
-              >
-                <polyline points="16 18 22 12 16 6"></polyline>
-                <polyline points="8 6 2 12 8 18"></polyline>
-              </svg>
-              {showTechnicalDetails ? "Hide Technical Details" : "Show Technical Details"}
-            </button>
-          </div>
+          <div style={{ display: "flex", gap: "8px" }}></div>
         </div>
 
         <div
@@ -406,7 +389,9 @@ export default function ImageAnalysisPage() {
             },
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+          >
             <div
               style={{
                 border: "1px solid #333",
@@ -445,7 +430,9 @@ export default function ImageAnalysisPage() {
                         color: "#9ca3af",
                       }}
                     >
-                      {isDemoMode ? "Demo image analysis" : "Uploaded image analysis"}
+                      {isDemoMode
+                        ? "Demo image analysis"
+                        : "Uploaded image analysis"}
                     </div>
                   </div>
                   <div
@@ -464,8 +451,12 @@ export default function ImageAnalysisPage() {
                         gap: "4px",
                       }}
                     >
-                      <span style={{ color: getScoreColor(overallScore) }}>{overallScore}</span>
-                      <span style={{ fontSize: "0.875rem", color: "#9ca3af" }}>/100</span>
+                      <span style={{ color: getScoreColor(overallScore) }}>
+                        {overallScore}
+                      </span>
+                      <span style={{ fontSize: "0.875rem", color: "#9ca3af" }}>
+                        /100
+                      </span>
                     </div>
                     {getScoreIcon(overallScore)}
                   </div>
@@ -482,7 +473,9 @@ export default function ImageAnalysisPage() {
                     }}
                   >
                     <span>Risk Level: {results.riskLevel}</span>
-                    <span style={{ color: getScoreColor(overallScore) }}>{results.summary}</span>
+                    <span style={{ color: getScoreColor(overallScore) }}>
+                      {results.summary}
+                    </span>
                   </div>
                   <div
                     style={{
@@ -529,8 +522,8 @@ export default function ImageAnalysisPage() {
                         imagePreview
                           ? imagePreview
                           : isDemoMode
-                            ? "/placeholder.svg?height=300&width=400"
-                            : "/placeholder.svg?height=300&width=400"
+                          ? "/placeholder.svg?height=300&width=400"
+                          : "/placeholder.svg?height=300&width=400"
                       }
                       alt="Analyzed image"
                       style={{
@@ -566,7 +559,8 @@ export default function ImageAnalysisPage() {
                       style={{
                         padding: "8px 16px",
                         fontWeight: activeTab === "all" ? "bold" : "normal",
-                        borderBottom: activeTab === "all" ? "2px solid #22c55e" : "none",
+                        borderBottom:
+                          activeTab === "all" ? "2px solid #22c55e" : "none",
                         backgroundColor: "transparent",
                         border: "none",
                         cursor: "pointer",
@@ -580,7 +574,8 @@ export default function ImageAnalysisPage() {
                       style={{
                         padding: "8px 16px",
                         fontWeight: activeTab === "failed" ? "bold" : "normal",
-                        borderBottom: activeTab === "failed" ? "2px solid #ef4444" : "none",
+                        borderBottom:
+                          activeTab === "failed" ? "2px solid #ef4444" : "none",
                         backgroundColor: "transparent",
                         border: "none",
                         cursor: "pointer",
@@ -594,7 +589,8 @@ export default function ImageAnalysisPage() {
                       style={{
                         padding: "8px 16px",
                         fontWeight: activeTab === "passed" ? "bold" : "normal",
-                        borderBottom: activeTab === "passed" ? "2px solid #22c55e" : "none",
+                        borderBottom:
+                          activeTab === "passed" ? "2px solid #22c55e" : "none",
                         backgroundColor: "transparent",
                         border: "none",
                         cursor: "pointer",
@@ -606,7 +602,13 @@ export default function ImageAnalysisPage() {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                  }}
+                >
                   {filteredChecks[activeTab].map((check, index) => (
                     <CheckResultCard
                       key={index}
@@ -620,7 +622,9 @@ export default function ImageAnalysisPage() {
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+          >
             <div
               style={{
                 border: "1px solid #333",
@@ -646,7 +650,13 @@ export default function ImageAnalysisPage() {
                 </h2>
               </div>
               <div style={{ padding: "24px" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                  }}
+                >
                   <div>
                     <div
                       style={{
@@ -669,7 +679,9 @@ export default function ImageAnalysisPage() {
                       >
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                       </svg>
-                      <h3 style={{ fontWeight: "medium", color: "#e4e4e4" }}>Overall Assessment</h3>
+                      <h3 style={{ fontWeight: "medium", color: "#e4e4e4" }}>
+                        Overall Assessment
+                      </h3>
                     </div>
                     <p
                       style={{
@@ -705,7 +717,9 @@ export default function ImageAnalysisPage() {
                         <line x1="12" y1="9" x2="12" y2="13"></line>
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                       </svg>
-                      <h3 style={{ fontWeight: "medium", color: "#e4e4e4" }}>Recommendation</h3>
+                      <h3 style={{ fontWeight: "medium", color: "#e4e4e4" }}>
+                        Recommendation
+                      </h3>
                     </div>
                     <p
                       style={{
@@ -741,7 +755,9 @@ export default function ImageAnalysisPage() {
                           <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
                           <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
                         </svg>
-                        <h3 style={{ fontWeight: "medium", color: "#e4e4e4" }}>AI Analysis</h3>
+                        <h3 style={{ fontWeight: "medium", color: "#e4e4e4" }}>
+                          AI Analysis
+                        </h3>
                       </div>
                       <p
                         style={{
@@ -760,14 +776,19 @@ export default function ImageAnalysisPage() {
                           backgroundColor: "#2a2a2a",
                           borderRadius: "4px",
                           fontSize: "0.875rem",
-                          color: overallScore >= 80 ? "#22c55e" : overallScore >= 60 ? "#eab308" : "#ef4444",
+                          color:
+                            overallScore >= 80
+                              ? "#22c55e"
+                              : overallScore >= 60
+                              ? "#eab308"
+                              : "#ef4444",
                         }}
                       >
                         {overallScore >= 80
                           ? "AI Confidence: This image appears to be safe"
                           : overallScore >= 60
-                            ? "AI Confidence: This image shows some suspicious patterns"
-                            : "AI Confidence: This image likely contains phishing content"}
+                          ? "AI Confidence: This image shows some suspicious patterns"
+                          : "AI Confidence: This image likely contains phishing content"}
                       </div>
                     </div>
                   )}
@@ -800,8 +821,17 @@ export default function ImageAnalysisPage() {
                 </h2>
               </div>
               <div style={{ padding: "24px" }}>
-                <ul style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.875rem" }}>
-                  <li style={{ display: "flex", alignItems: "start", gap: "8px" }}>
+                <ul
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  <li
+                    style={{ display: "flex", alignItems: "start", gap: "8px" }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -818,10 +848,13 @@ export default function ImageAnalysisPage() {
                       <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
                     <span style={{ color: "#e4e4e4" }}>
-                      Don't click on any links or scan QR codes in suspicious messages
+                      Don't click on any links or scan QR codes in suspicious
+                      messages
                     </span>
                   </li>
-                  <li style={{ display: "flex", alignItems: "start", gap: "8px" }}>
+                  <li
+                    style={{ display: "flex", alignItems: "start", gap: "8px" }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -838,10 +871,13 @@ export default function ImageAnalysisPage() {
                       <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
                     <span style={{ color: "#e4e4e4" }}>
-                      Verify the sender's identity through official channels before responding
+                      Verify the sender's identity through official channels
+                      before responding
                     </span>
                   </li>
-                  <li style={{ display: "flex", alignItems: "start", gap: "8px" }}>
+                  <li
+                    style={{ display: "flex", alignItems: "start", gap: "8px" }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -858,10 +894,13 @@ export default function ImageAnalysisPage() {
                       <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
                     <span style={{ color: "#e4e4e4" }}>
-                      Report suspicious messages to the appropriate platform or organization
+                      Report suspicious messages to the appropriate platform or
+                      organization
                     </span>
                   </li>
-                  <li style={{ display: "flex", alignItems: "start", gap: "8px" }}>
+                  <li
+                    style={{ display: "flex", alignItems: "start", gap: "8px" }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -877,7 +916,9 @@ export default function ImageAnalysisPage() {
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                       <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
-                    <span style={{ color: "#e4e4e4" }}>Be cautious of urgent requests or threats in messages</span>
+                    <span style={{ color: "#e4e4e4" }}>
+                      Be cautious of urgent requests or threats in messages
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -909,9 +950,22 @@ export default function ImageAnalysisPage() {
                   </h2>
                 </div>
                 <div style={{ padding: "24px" }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "16px",
+                    }}
+                  >
                     <div>
-                      <h3 style={{ fontSize: "1rem", fontWeight: "medium", color: "#e4e4e4", marginBottom: "8px" }}>
+                      <h3
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: "medium",
+                          color: "#e4e4e4",
+                          marginBottom: "8px",
+                        }}
+                      >
                         EXIF Data
                       </h3>
                       <div
@@ -932,7 +986,14 @@ export default function ImageAnalysisPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 style={{ fontSize: "1rem", fontWeight: "medium", color: "#e4e4e4", marginBottom: "8px" }}>
+                      <h3
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: "medium",
+                          color: "#e4e4e4",
+                          marginBottom: "8px",
+                        }}
+                      >
                         Hidden Data Analysis
                       </h3>
                       <div
@@ -946,11 +1007,15 @@ export default function ImageAnalysisPage() {
                       >
                         {overallScore < 60 ? (
                           <p>
-                            Steganography analysis detected hidden data embedded in the image. This could contain
-                            malicious code or tracking information.
+                            Steganography analysis detected hidden data embedded
+                            in the image. This could contain malicious code or
+                            tracking information.
                           </p>
                         ) : (
-                          <p>No hidden data or steganography detected in this image.</p>
+                          <p>
+                            No hidden data or steganography detected in this
+                            image.
+                          </p>
                         )}
                       </div>
                     </div>
@@ -1019,7 +1084,7 @@ export default function ImageAnalysisPage() {
         </div>
       </footer>
       <style jsx>{`
-        @media (minWidth: 768px) {
+        @media (minwidth: 768px) {
           main > div:first-child {
             grid-template-columns: minmax(0, 1fr) 300px;
           }
@@ -1043,17 +1108,17 @@ export default function ImageAnalysisPage() {
         }
       `}</style>
     </div>
-  )
+  );
 }
 
 function CheckResultCard({ check, showTechnicalDetails, scanMode }) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const getScoreColor = (score) => {
-    if (score >= 80) return "#22c55e"
-    if (score >= 60) return "#eab308"
-    return "#ef4444"
-  }
+    if (score >= 80) return "#22c55e";
+    if (score >= 60) return "#eab308";
+    return "#ef4444";
+  };
 
   const getScoreIcon = (score) => {
     if (score >= 80) {
@@ -1072,7 +1137,7 @@ function CheckResultCard({ check, showTechnicalDetails, scanMode }) {
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
-      )
+      );
     }
     if (score >= 60) {
       return (
@@ -1091,7 +1156,7 @@ function CheckResultCard({ check, showTechnicalDetails, scanMode }) {
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
-      )
+      );
     }
     return (
       <svg
@@ -1109,8 +1174,8 @@ function CheckResultCard({ check, showTechnicalDetails, scanMode }) {
         <line x1="15" y1="9" x2="9" y2="15"></line>
         <line x1="9" y1="9" x2="15" y2="15"></line>
       </svg>
-    )
-  }
+    );
+  };
 
   return (
     <div
@@ -1247,7 +1312,9 @@ function CheckResultCard({ check, showTechnicalDetails, scanMode }) {
       </div>
       {isExpanded && (
         <div style={{ padding: "16px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
             <div>
               <h4
                 style={{
@@ -1380,5 +1447,5 @@ function CheckResultCard({ check, showTechnicalDetails, scanMode }) {
         </div>
       )}
     </div>
-  )
+  );
 }
